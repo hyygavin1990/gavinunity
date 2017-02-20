@@ -1,0 +1,105 @@
+#*
+ * 生成翻页链接
+ * 作者: panmg
+ *#
+#macro(page $url $page)
+	#set ($curpage = $page.pageNumber)
+	#set ($tolpage = $page.totalPage)
+	
+	#if($url.indexOf("?") == -1)
+		#set($split='?')
+	#else
+		#set($split='&')
+	#end		
+			
+	## 添加开始页
+	#if($curpage > 6)
+		#set ($begidx = $curpage - 3)
+		<li><a href="$url${split}p=1">1</span></a>
+	#else
+		#set ($begidx =1)
+	#end	
+		
+	#set ($endidx = $begidx + 9)
+	
+	#if ($endidx > $tolpage) 
+		#set ($endidx = $tolpage)
+		
+		#set ($begidx = $tolpage - 9)
+		#if  ($begidx < 1 )
+			#set ($begidx = 1)
+		#end	
+		
+		#if ($tolpage == 0 || $tolpage==1)
+			#break
+		#end
+	#end
+	
+	## 循环头尾页数
+	#foreach($inx in [$begidx..$endidx])
+		#if($inx == $curpage)
+			<li  class="active"><a href="$url${split}p=$inx">$inx</span></a>
+		#else
+			<li><a href="$url${split}p=$inx">$inx</span></a>
+		#end
+	#end
+	
+	## 添加 结束页
+	#if($endidx < $tolpage)	
+		<li><a href="$url${split}p=$tolpage">$tolpage</span></a>
+	#end	
+#end
+
+#macro(pagegg $url $page)
+	#set ($curpage = $page.pageNumber)
+	#set ($tolpage = $page.totalPage)
+	
+	#if($tolpage>0)
+	#if($url.indexOf("?") == -1)
+		#set($split='?')
+	#else
+		#set($split='&')
+	#end
+	<div class="paging clearfix" style="margin:auto; text-align:center;width:auto;">
+		## 添加首页上一页
+		#if($curpage > 1)
+			#set ($ppage = $curpage - 1)
+			<a href="$url${split}p=1"><span>&lt;&lt;</span></a>
+			<a href="$url${split}p=$ppage"><span>&lt;</span></a>
+		#end
+		
+		## 分页列表
+		#if($curpage > 6)
+			#set ($begidx = $curpage - 3)
+		#else
+			#set ($begidx =1)
+		#end	
+			
+		#set ($endidx = $begidx + 9)
+		
+		#if ($endidx > $tolpage)
+			#set ($endidx = $tolpage)
+		#end
+		
+		## 循环头尾页数
+		#foreach($inx in [$begidx..$endidx])
+			#if($inx == $curpage)
+				<a href="javascript:;"><span class="select">$inx</span></a>
+			#else
+				<a href="$url${split}p=$inx"><span>$inx</span></a>
+			#end
+		#end
+
+		## 添加下一页尾页
+		#if($curpage < $tolpage)
+			#set ($npage = $curpage + 1)
+			<a href="$url${split}p=$npage"><span>&gt;</span></a>
+			<a href="$url${split}p=$tolpage"><span>&gt;&gt;</span></a>
+		#end
+		<i>共$tolpage页，到第</i>
+		<input type="text" class="gopagenum" trim="on"/>
+		<i>页</i>
+	    <input type="button" class="btn" value="确定" onclick="gopageurl('$url${split}p=',event,$tolpage)"/>
+	</div>
+	#end
+#end
